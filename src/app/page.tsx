@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import axios from 'axios';
 import VoiceRecorder from '@/components/VoiceRecorder';
 import TextInput from '@/components/TextInput';
 import TransactionList from '@/components/TransactionList';
@@ -33,32 +34,28 @@ export default function Home() {
       setTranscription(text);
     }
     
-    // Basic parsing - look for cost patterns and extract item
-    const costMatch = text.match(/\$?(\d+(?:\.\d{2})?)/);
-    const cost = costMatch ? parseFloat(costMatch[1]) : 0;
-    
-    if (cost > 0) {
-      // Extract item by removing cost-related words
-      let item = text.replace(/\$?(\d+(?:\.\d{2})?)/, '').trim();
-      item = item.replace(/\b(dollars?|bucks?|spent|cost|paid|for)\b/gi, '').trim();
-      item = item || 'Unknown item';
+    try {
+      // Use AI to parse the expense text
+      const parseResponse = await axios.post('/api/parse-expense', { text });
+      const { amount, item } = parseResponse.data;
       
-      try {
-        await addTransaction(item, cost);
+      if (amount > 0 && item) {
+        await addTransaction(item, amount);
         if (inputMode === 'voice') {
           setTranscription('');
         }
-      } catch (error) {
-        console.error('Failed to add transaction:', error);
-        alert('Failed to add transaction. Please try again.');
+      } else {
+        throw new Error('Invalid amount or item');
       }
-    } else {
-      // If no cost found, show error
+    } catch (error) {
+      console.error('Failed to parse or add transaction:', error);
+      
+      // Show appropriate error message
       if (inputMode === 'voice') {
-        alert(`I heard: "${text}"\nPlease try again with a clearer amount.`);
+        alert(`I heard: "${text}"\nPlease try again with a clearer amount and item description.`);
         setTranscription('');
       } else {
-        alert('Please include an amount (e.g., "$12.50 coffee")');
+        alert('Please include an amount and item description (e.g., "$12.50 for coffee")');
       }
     }
   };

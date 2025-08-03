@@ -1,0 +1,18 @@
+
+> scrooge_2@0.1.0 dev
+> next dev --turbopack
+
+ ⚠ Warning: Found multiple lockfiles. Selecting /Users/courtashdale/package-lock.json.
+   Consider removing the lockfiles at:
+   * /Users/courtashdale/Desktop/Developer/new_projects/scrooge_2/package-lock.json
+
+   ▲ Next.js 15.4.5 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.85:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1320ms
+ ○ Compiling /api/parse-expense ...
+ ✓ Compiled /api/parse-expense in 999ms
+ POST /api/parse-expense 200 in 2027ms
