@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Transaction } from '@/types/transaction';
+import { formatDateForDisplay } from '@/lib/dateParser';
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -37,7 +38,7 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
 
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
-    return d.toLocaleDateString();
+    return formatDateForDisplay(d);
   };
 
   const formatCurrency = (amount: number) => {

@@ -1,6 +1,9 @@
+import { parseRelativeDate } from './dateParser';
+
 export interface ParsedExpense {
   amount: number;
   item: string;
+  date: Date;
 }
 
 export function parseExpenseOffline(text: string): ParsedExpense | null {
@@ -83,10 +86,14 @@ export function parseExpenseOffline(text: string): ParsedExpense | null {
   if (!cleanItem || cleanItem.length < 2) {
     cleanItem = 'Unknown Item';
   }
+
+  // Parse date from the original text
+  const parsedDate = parseRelativeDate(text);
   
   return {
     amount,
-    item: cleanItem
+    item: cleanItem,
+    date: parsedDate
   };
 }
 

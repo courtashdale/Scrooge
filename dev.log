@@ -17,3 +17,10 @@
  ✓ Compiled /api/parse-expense in 999ms
  POST /api/parse-expense 200 in 2027ms
  POST /api/parse-expense 200 in 1616ms
+ POST /api/parse-expense 200 in 1522ms
+ POST /api/parse-expense 200 in 870ms
+ POST /api/parse-expense 200 in 1444ms
+ ○ Compiling /api/transactions ...
+ ✓ Compiled /api/transactions in 629ms
+ GET /api/transactions 200 in 2549ms
+ POST /api/transactions 201 in 152ms

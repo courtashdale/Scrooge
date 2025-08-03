@@ -34,6 +34,7 @@ export function useTransactions() {
   const addTransaction = async (item: string, cost: number, date: Date = new Date(), useOffline: boolean = false) => {
     try {
       setLoading(true);
+      console.log('addTransaction called with date:', date);
       
       let categories;
       let newTransaction: Transaction;
@@ -76,6 +77,7 @@ export function useTransactions() {
           ...categories
         };
         
+        console.log('Sending to API:', transactionData);
         const response = await axios.post('/api/transactions', transactionData);
         newTransaction = response.data;
         

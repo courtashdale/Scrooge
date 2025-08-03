@@ -15,6 +15,7 @@ export default function Home() {
   const [transcription, setTranscription] = useState('');
   const [showTransactions, setShowTransactions] = useState(false);
   const [inputMode, setInputMode] = useState<'voice' | 'text'>('voice');
+  const [mounted, setMounted] = useState(false);
   const isOnline = useNetworkStatus();
   const { transactions, addTransaction, updateTransaction, deleteTransaction, loading } = useTransactions();
 
@@ -31,6 +32,11 @@ export default function Home() {
     setTodaysTotal(total);
   }, [transactions]);
 
+  // Set mounted after component mounts to prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Parse text and add transaction (works for both voice and text input)
   const handleTextInput = async (text: string) => {
     if (inputMode === 'voice') {
@@ -39,13 +45,21 @@ export default function Home() {
     
     let amount: number;
     let item: string;
+    let transactionDate: Date = new Date();
     let useOfflineFlow = false;
     
     try {
       if (isOnline) {
         // Try AI parsing first when online
         const parseResponse = await axios.post('/api/parse-expense', { text });
-        ({ amount, item } = parseResponse.data);
+        const data = parseResponse.data;
+        console.log('AI Parse response:', data);
+        amount = data.amount;
+        item = data.item;
+        if (data.date) {
+          transactionDate = new Date(data.date);
+          console.log('Parsed date:', transactionDate);
+        }
       } else {
         useOfflineFlow = true;
         throw new Error('Offline mode');
@@ -66,13 +80,16 @@ export default function Home() {
         return;
       }
       
-      ({ amount, item } = parsed);
+      amount = parsed.amount;
+      item = parsed.item;
+      transactionDate = parsed.date;
       useOfflineFlow = true;
     }
     
     try {
       if (amount > 0 && item) {
-        await addTransaction(item, amount, new Date(), useOfflineFlow);
+        console.log('Adding transaction with date:', transactionDate);
+        await addTransaction(item, amount, transactionDate, useOfflineFlow);
         if (inputMode === 'voice') {
           setTranscription('');
         }
@@ -99,7 +116,7 @@ export default function Home() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">🎩 Scrooge</h1>
           <p className="text-gray-600">Voice & Text Expense Tracker</p>
-          {!isOnline && (
+          {mounted && !isOnline && (
             <div className="mt-2 px-3 py-1 bg-orange-100 text-orange-800 text-sm rounded-full inline-block">
               🌚 Offline Mode - Data will sync when you're back online
             </div>

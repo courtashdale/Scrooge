@@ -13,6 +13,7 @@ export default function Dashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(false);
   const [dateFilter, setDateFilter] = useState<DateFilter>('all');
+  const [mounted, setMounted] = useState(false);
 
   const getDateRange = (filter: DateFilter) => {
     const now = new Date();
@@ -78,8 +79,31 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    setMounted(true);
     fetchTransactions(dateFilter);
   }, [dateFilter]);
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
+              <p className="text-gray-600 mt-1">Loading...</p>
+            </div>
+            <Link 
+              href="/"
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Back to Tracker
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const getTotalAmount = () => {
     return transactions.reduce((sum, t) => sum + t.cost, 0);
