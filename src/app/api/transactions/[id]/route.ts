@@ -5,8 +5,9 @@ import logger from '@/lib/logger';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
+  const { params } = context;
   const { id } = params;
   logger.info({ id }, 'Updating transaction');
   
