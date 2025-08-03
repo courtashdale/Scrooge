@@ -1,4 +1,4 @@
-# Scrooge - Voice-Activated Expense Tracker
+# 🎩 Scrooge - Voice-Activated Expense Tracker
 
 AI-powered mobile web app for tracking expenses through voice commands with real-time transcription and automatic categorization.
 
