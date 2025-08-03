@@ -8,7 +8,7 @@ import TextInput from '@/components/TextInput';
 import TransactionList from '@/components/TransactionList';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
-import { parseExpenseOffline, categorizeOffline } from '@/lib/offlineParser';
+import { parseExpenseOffline } from '@/lib/offlineParser';
 
 export default function Home() {
   const [todaysTotal, setTodaysTotal] = useState(0);
@@ -64,7 +64,7 @@ export default function Home() {
         useOfflineFlow = true;
         throw new Error('Offline mode');
       }
-    } catch (error) {
+    } catch {
       // Fallback to offline parsing
       console.log(isOnline ? 'AI parsing failed, using offline fallback' : 'Offline mode: using local parsing');
       
@@ -118,14 +118,14 @@ export default function Home() {
           <p className="text-gray-600">Voice & Text Expense Tracker</p>
           {mounted && !isOnline && (
             <div className="mt-2 px-3 py-1 bg-orange-100 text-orange-800 text-sm rounded-full inline-block">
-              🌚 Offline Mode - Data will sync when you're back online
+              🌚 Offline Mode - Data will sync when you&rsquo;re back online
             </div>
           )}
         </div>
 
         {/* Today's Total */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6 text-center">
-          <h2 className="text-lg font-semibold text-gray-700 mb-2">Today's Expenses</h2>
+          <h2 className="text-lg font-semibold text-gray-700 mb-2">Today&rsquo;s Expenses</h2>
           <div className="text-3xl font-bold text-blue-600">
             {formatCurrency(todaysTotal)}
           </div>

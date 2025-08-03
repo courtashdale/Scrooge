@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const date_end = searchParams.get('date_end');
     const category = searchParams.get('category');
     
-    let filter: any = {};
+    const filter: { [key: string]: unknown } = {};
     
     if (date_start || date_end) {
       filter.date = {};

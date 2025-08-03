@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import { Transaction } from '@/types/transaction';
@@ -25,20 +25,22 @@ export default function Dashboard() {
           start: today,
           end: new Date(today.getTime() + 24 * 60 * 60 * 1000 - 1)
         };
-      case 'yesterday':
+      case 'yesterday': {
         const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
         return {
           start: yesterday,
           end: new Date(yesterday.getTime() + 24 * 60 * 60 * 1000 - 1)
         };
-      case 'this_week':
+      }
+      case 'this_week': {
         const thisWeekStart = new Date(today);
         thisWeekStart.setDate(today.getDate() - today.getDay());
         return {
           start: thisWeekStart,
           end: now
         };
-      case 'last_week':
+      }
+      case 'last_week': {
         const lastWeekEnd = new Date(today);
         lastWeekEnd.setDate(today.getDate() - today.getDay() - 1);
         const lastWeekStart = new Date(lastWeekEnd);
@@ -47,12 +49,13 @@ export default function Dashboard() {
           start: lastWeekStart,
           end: lastWeekEnd
         };
+      }
       default:
         return null;
     }
   };
 
-  const fetchTransactions = async (filter: DateFilter) => {
+  const fetchTransactions = useCallback(async (filter: DateFilter) => {
     try {
       setLoading(true);
       const dateRange = getDateRange(filter);
@@ -76,12 +79,12 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     setMounted(true);
     fetchTransactions(dateFilter);
-  }, [dateFilter]);
+  }, [dateFilter, fetchTransactions]);
 
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {

@@ -56,7 +56,7 @@ export default function TextInput({ onSubmit, disabled }: TextInputProps) {
         </button>
       </form>
       <p className="text-xs text-gray-500 mt-2 text-center">
-        Include the amount and item description <br></br>(e.g., "$5 on coffee with Sam")
+        Include the amount and item description <br></br>(e.g., &quot;$5 on coffee with Sam&quot;)
       </p>
     </div>
   );

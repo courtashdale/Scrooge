@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import * as d3 from 'd3';
 import { Transaction } from '@/types/transaction';
 
@@ -13,7 +13,7 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
   const lineChartRef = useRef<SVGSVGElement>(null);
 
   // Process data for charts
-  const getCategoryData = () => {
+  const getCategoryData = useCallback(() => {
     const categories = {
       grocery: 0,
       entertainment: 0,
@@ -36,14 +36,14 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
     });
 
     return Object.entries(categories)
-      .filter(([_, value]) => value > 0)
+      .filter(([, value]) => value > 0)
       .map(([category, value]) => ({
         category: category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
         value
       }));
-  };
+  }, [transactions]);
 
-  const getTimeSeriesData = () => {
+  const getTimeSeriesData = useCallback(() => {
     const dailyTotals = new Map<string, number>();
     
     transactions.forEach(transaction => {
@@ -57,7 +57,7 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
         total
       }))
       .sort((a, b) => a.date.getTime() - b.date.getTime());
-  };
+  }, [transactions]);
 
   // Draw pie chart
   useEffect(() => {
@@ -81,11 +81,11 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
 
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
-    const pie = d3.pie<any>()
+    const pie = d3.pie<{ value: number }>()
       .value(d => d.value)
       .sort(null);
 
-    const arc = d3.arc<any>()
+    const arc = d3.arc<d3.PieArcDatum<{ value: number }>>()
       .innerRadius(0)
       .outerRadius(radius);
 
@@ -97,7 +97,7 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
 
     arcs.append('path')
       .attr('d', arc)
-      .attr('fill', (d, i) => color(i.toString()));
+      .attr('fill', (_, i) => color(i.toString()));
 
     arcs.append('text')
       .attr('transform', d => `translate(${arc.centroid(d)})`)
@@ -106,7 +106,7 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
       .attr('fill', 'black')
       .text(d => d.data.category);
 
-  }, [transactions]);
+  }, [transactions, getCategoryData]);
 
   // Draw line chart
   useEffect(() => {
@@ -133,7 +133,7 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
       .nice()
       .range([height - margin.bottom, margin.top]);
 
-    const line = d3.line<any>()
+    const line = d3.line<{ date: Date; total: number }>()
       .x(d => xScale(d.date))
       .y(d => yScale(d.total))
       .curve(d3.curveMonotoneX);
@@ -149,7 +149,7 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
     // Left axis
     svg.append('g')
       .attr('transform', `translate(${margin.left}, 0)`)
-      .call(d3.axisLeft(yScale).tickFormat(d => `$${d}`))
+      .call(d3.axisLeft(yScale).tickFormat(d => `${d}`))
       .call(g => g.selectAll('text').attr('fill', 'black'))
       .call(g => g.selectAll('line').attr('stroke', 'black'))
       .call(g => g.selectAll('path').attr('stroke', 'black'));
@@ -172,7 +172,7 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
       .attr('r', 4)
       .attr('fill', '#3b82f6');
 
-  }, [transactions]);
+  }, [transactions, getTimeSeriesData]);
 
   const categoryData = getCategoryData();
   const timeSeriesData = getTimeSeriesData();
