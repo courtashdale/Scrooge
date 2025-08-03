@@ -21,7 +21,8 @@ const config = [
       '**/dist/**',
       '**/coverage/**',
       '**/.venv/**',
-      '**.eslintignore**'
+      '**.eslintignore**',
+      '**/.claude/**'
     ],
   },
 
