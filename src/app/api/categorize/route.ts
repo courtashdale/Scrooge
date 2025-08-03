@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import openai from '@/lib/openai';
+import logger from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   try {
     const { item } = await request.json();
+    logger.info({ item }, 'Categorizing item');
 
     if (!item) {
+      logger.warn('Item is required');
       return NextResponse.json({ error: 'Item is required' }, { status: 400 });
     }
 
@@ -26,6 +29,7 @@ export async function POST(request: NextRequest) {
     });
 
     const category = completion.choices[0].message.content?.trim().toLowerCase();
+    logger.info({ category }, 'Categorized item');
     
     const categories = {
       is_grocery: false,
@@ -49,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(categories);
   } catch (error) {
-    console.error('Categorization error:', error);
+    logger.error(error, 'Categorization error');
     return NextResponse.json({ error: 'Categorization failed' }, { status: 500 });
   }
 }

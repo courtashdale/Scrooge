@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import openai from '@/lib/openai';
 import { parseRelativeDate } from '@/lib/dateParser';
+import logger from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   try {
     const { text } = await request.json();
+    logger.info({ text }, 'Parsing expense');
 
     if (!text) {
+      logger.warn('Text is required');
       return NextResponse.json({ error: 'Text is required' }, { status: 400 });
     }
 
@@ -36,11 +39,13 @@ Return ONLY the JSON object, no explanation.`
     });
 
     const response = completion.choices[0].message.content?.trim();
+    logger.info({ response }, 'Parsed expense from AI');
     
     try {
       const parsed = JSON.parse(response || '{}');
       
       if (!parsed.amount || !parsed.item) {
+        logger.warn('Could not parse amount or item from text');
         return NextResponse.json({ 
           error: 'Could not parse amount or item from text' 
         }, { status: 400 });
@@ -58,13 +63,13 @@ Return ONLY the JSON object, no explanation.`
         date: parsedDate.toISOString()
       });
     } catch (parseError) {
-      console.error('Failed to parse AI response:', response);
+      logger.error({ response, parseError }, 'Failed to parse AI response');
       return NextResponse.json({ 
         error: 'Failed to parse expense information' 
       }, { status: 500 });
     }
   } catch (error) {
-    console.error('Expense parsing error:', error);
+    logger.error(error, 'Expense parsing error');
     return NextResponse.json({ error: 'Parsing failed' }, { status: 500 });
   }
 }

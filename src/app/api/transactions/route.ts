@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/mongodb';
 import { Transaction } from '@/types/transaction';
+import logger from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,14 +25,16 @@ export async function GET(request: NextRequest) {
       filter[`is_${category}`] = true;
     }
     
+    logger.info({ filter }, 'Fetching transactions');
     const transactions = await collection
       .find(filter)
       .sort({ date: -1 })
       .toArray();
     
+    logger.info({ count: transactions.length }, 'Fetched transactions');
     return NextResponse.json(transactions);
   } catch (error) {
-    console.error('Database error:', error);
+    logger.error(error, 'Database error');
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -42,17 +45,19 @@ export async function POST(request: NextRequest) {
     const collection = db.collection('expenses');
 
     const transaction: Omit<Transaction, '_id'> = await request.json();
+    logger.info({ transaction }, 'Creating transaction');
     const result = await collection.insertOne({
       ...transaction,
       date: new Date(transaction.date)
     });
     
+    logger.info({ id: result.insertedId }, 'Created transaction');
     return NextResponse.json({ 
       _id: result.insertedId,
       ...transaction 
     }, { status: 201 });
   } catch (error) {
-    console.error('Database error:', error);
+    logger.error(error, 'Database error');
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

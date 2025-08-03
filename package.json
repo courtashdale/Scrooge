@@ -17,20 +17,24 @@
     "mongodb": "^6.18.0",
     "next": "15.4.5",
     "openai": "^5.11.0",
+    "pino": "^9.7.0",
+    "pino-pretty": "^13.1.1",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@eslint/js": "^9.32.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20.19.9",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
+    "eslint": "^9.32.0",
     "eslint-config-next": "15.4.5",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.38.0"
   },
   "description": "AI-powered mobile web app for tracking expenses through voice commands with real-time transcription and automatic categorization.",
   "main": "index.js",
