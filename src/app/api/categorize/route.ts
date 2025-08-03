@@ -1,22 +1,14 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 import openai from '@/lib/openai';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', ['POST']);
-    return res.status(405).end(`Method ${req.method} Not Allowed`);
-  }
-
-  const { item } = req.body;
-
-  if (!item) {
-    return res.status(400).json({ error: 'Item is required' });
-  }
-
+export async function POST(request: NextRequest) {
   try {
+    const { item } = await request.json();
+
+    if (!item) {
+      return NextResponse.json({ error: 'Item is required' }, { status: 400 });
+    }
+
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
@@ -55,9 +47,9 @@ export default async function handler(
       categories.is_other = true;
     }
 
-    res.status(200).json(categories);
+    return NextResponse.json(categories);
   } catch (error) {
     console.error('Categorization error:', error);
-    res.status(500).json({ error: 'Categorization failed' });
+    return NextResponse.json({ error: 'Categorization failed' }, { status: 500 });
   }
 }
