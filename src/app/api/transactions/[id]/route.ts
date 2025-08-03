@@ -3,10 +3,8 @@ import { getDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import logger from '@/lib/logger';
 
-type RouteContext = { params: { id: string } };
-
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function PUT(request: NextRequest, context: any) {
+  const { id } = (context.params || {}) as { id: string };
   logger.info({ id }, 'Updating transaction');
 
   if (!id || !ObjectId.isValid(id)) {
@@ -19,8 +17,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     const collection = db.collection('expenses');
 
     const updateData = await request.json();
-    if (updateData.date) {
-      updateData.date = new Date(updateData.date);
+    if (updateData?.date) {
+      const d = new Date(updateData.date);
+      if (!Number.isNaN(d.getTime())) updateData.date = d;
     }
 
     const result = await collection.updateOne(
@@ -41,8 +40,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function DELETE(request: NextRequest, context: any) {
+  const { id } = (context.params || {}) as { id: string };
   logger.info({ id }, 'Deleting transaction');
 
   if (!id || !ObjectId.isValid(id)) {
