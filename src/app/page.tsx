@@ -142,7 +142,7 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Recent Transactions */}
+        {/* Latest Transactions */}
         {showTransactions && (
           <div className="bg-white rounded-lg shadow-md p-6">
             {loading ? (

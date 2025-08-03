@@ -29,8 +29,8 @@ export default function TextInput({ onSubmit, disabled }: TextInputProps) {
     <div className="w-full">
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label htmlFor="expense-input" className="block text-sm font-medium text-gray-700 mb-2">
-            Type your expense
+          <label htmlFor="expense-input" className="block text-sm font-medium text-gray-700 mb-2 text-center">
+            What did you spend?
           </label>
           <textarea
             id="expense-input"
@@ -56,7 +56,7 @@ export default function TextInput({ onSubmit, disabled }: TextInputProps) {
         </button>
       </form>
       <p className="text-xs text-gray-500 mt-2 text-center">
-        Include the amount and item description (e.g., "$15 lunch at cafe")
+        Include the amount and item description <br></br>(e.g., "$5 on coffee with Sam")
       </p>
     </div>
   );
