@@ -3,12 +3,14 @@
 import { useEffect, useRef, useCallback } from 'react';
 import * as d3 from 'd3';
 import { Transaction } from '@/types/transaction';
+import { useTheme } from 'next-themes';
 
 interface ExpenseChartsProps {
   transactions: Transaction[];
 }
 
 export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
+  const { theme } = useTheme();
   const pieChartRef = useRef<SVGSVGElement>(null);
   const lineChartRef = useRef<SVGSVGElement>(null);
 
@@ -61,6 +63,7 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
 
   // Draw pie chart
   useEffect(() => {
+    const textColor = theme === 'dark' ? 'white' : 'black';
     if (!pieChartRef.current) return;
 
     const data = getCategoryData();
@@ -103,13 +106,14 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
       .attr('transform', d => `translate(${arc.centroid(d)})`)
       .attr('text-anchor', 'middle')
       .attr('font-size', '12px')
-      .attr('fill', 'black')
+      .attr('fill', textColor)
       .text(d => d.data.category);
 
   }, [transactions, getCategoryData]);
 
   // Draw line chart
   useEffect(() => {
+    const textColor = theme === 'dark' ? 'white' : 'black';
     if (!lineChartRef.current) return;
 
     const data = getTimeSeriesData();
@@ -142,17 +146,17 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
     svg.append('g')
       .attr('transform', `translate(0, ${height - margin.bottom})`)
       .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat('%m/%d')))
-      .call(g => g.selectAll('text').attr('fill', 'black')) // ← Axis labels
-      .call(g => g.selectAll('line').attr('stroke', 'black')) // ← Tick lines
-      .call(g => g.selectAll('path').attr('stroke', 'black')); // ← Axis line
+      .call(g => g.selectAll('text').attr('fill', textColor)) // ← Axis labels
+      .call(g => g.selectAll('line').attr('stroke', textColor)) // ← Tick lines
+      .call(g => g.selectAll('path').attr('stroke', textColor)); // ← Axis line
 
     // Left axis
     svg.append('g')
       .attr('transform', `translate(${margin.left}, 0)`)
       .call(d3.axisLeft(yScale).tickFormat(d => `${d}`))
-      .call(g => g.selectAll('text').attr('fill', 'black'))
-      .call(g => g.selectAll('line').attr('stroke', 'black'))
-      .call(g => g.selectAll('path').attr('stroke', 'black'));
+      .call(g => g.selectAll('text').attr('fill', textColor))
+      .call(g => g.selectAll('line').attr('stroke', textColor))
+      .call(g => g.selectAll('path').attr('stroke', textColor));
 
     // Add line
     svg.append('path')

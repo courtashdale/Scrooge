@@ -10,6 +10,8 @@ import { useTransactions } from '@/hooks/useTransactions';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { parseExpenseOffline } from '@/lib/offlineParser';
 
+
+
 export default function Home() {
   const [todaysTotal, setTodaysTotal] = useState(0);
   const [transcription, setTranscription] = useState('');
@@ -21,16 +23,18 @@ export default function Home() {
 
   // Calculate today's total
   useEffect(() => {
-    const today = new Date();
-    const todayStr = today.toDateString();
-    
-    const todaysTransactions = transactions.filter(t => 
-      new Date(t.date).toDateString() === todayStr
-    );
-    
-    const total = todaysTransactions.reduce((sum, t) => sum + t.cost, 0);
-    setTodaysTotal(total);
-  }, [transactions]);
+    if (mounted) {
+      const today = new Date();
+      const todayStr = today.toDateString();
+      
+      const todaysTransactions = transactions.filter(t => 
+        new Date(t.date).toDateString() === todayStr
+      );
+      
+      const total = todaysTransactions.reduce((sum, t) => sum + t.cost, 0);
+      setTodaysTotal(total);
+    }
+  }, [transactions, mounted]);
 
   // Set mounted after component mounts to prevent hydration mismatch
   useEffect(() => {
@@ -123,6 +127,8 @@ export default function Home() {
           )}
         </div>
 
+        
+
         {/* Today's Total */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6 text-center">
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Today&rsquo;s Expenses</h2>
@@ -130,6 +136,7 @@ export default function Home() {
             {formatCurrency(todaysTotal)}
           </div>
         </div>
+
 
         {/* Input Mode Toggle */}
         <div className="flex bg-gray-200 rounded-lg p-1 mb-6">

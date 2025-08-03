@@ -20,7 +20,53 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-gray-50 text-gray-800;
+}
+
+.dark body {
+  @apply bg-gray-900 text-gray-100;
+}
+
+.dark .bg-white {
+  @apply bg-gray-800;
+}
+
+.dark .text-gray-800 {
+  @apply text-gray-200;
+}
+
+.dark .text-black {
+  @apply text-white;
+}
+
+.dark .text-gray-700 {
+  @apply text-gray-300;
+}
+
+.dark .text-gray-500 {
+  @apply text-gray-400;
+}
+
+.dark .bg-gray-50 {
+  @apply bg-gray-900;
+}
+
+.dark .bg-gray-200 {
+  @apply bg-gray-700;
+}
+
+.dark .text-blue-600 {
+  @apply text-blue-400;
+}
+
+.dark .hover\:bg-blue-600:hover {
+  @apply hover:bg-blue-500;
+}
+
+.dark .hover\:bg-green-600:hover {
+  @apply hover:bg-green-500;
+}
+
+.dark .shadow-md {
+  @apply shadow-none;
 }
