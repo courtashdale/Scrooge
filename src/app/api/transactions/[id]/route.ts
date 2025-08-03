@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+
+
 import { getDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import logger from '@/lib/logger';
@@ -7,8 +9,7 @@ export async function PUT(
   request: NextRequest,
   context: { params: { id: string } }
 ) {
-  const { params } = context;
-  const { id } = params;
+  const { id } = context.params;
   logger.info({ id }, 'Updating transaction');
   
   if (!id || !ObjectId.isValid(id)) {
@@ -45,9 +46,9 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
-  const { id } = params;
+  const { id } = context.params;
   logger.info({ id }, 'Deleting transaction');
   
   if (!id || !ObjectId.isValid(id)) {
