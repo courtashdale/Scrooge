@@ -109,7 +109,7 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
       .attr('fill', textColor)
       .text(d => d.data.category);
 
-  }, [transactions, getCategoryData]);
+  }, [transactions, getCategoryData, theme]);
 
   // Draw line chart
   useEffect(() => {
@@ -176,7 +176,7 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
       .attr('r', 4)
       .attr('fill', '#3b82f6');
 
-  }, [transactions, getTimeSeriesData]);
+  }, [transactions, getTimeSeriesData, theme]);
 
   const categoryData = getCategoryData();
   const timeSeriesData = getTimeSeriesData();
