@@ -16,3 +16,4 @@
  ○ Compiling /api/parse-expense ...
  ✓ Compiled /api/parse-expense in 999ms
  POST /api/parse-expense 200 in 2027ms
+ POST /api/parse-expense 200 in 1616ms

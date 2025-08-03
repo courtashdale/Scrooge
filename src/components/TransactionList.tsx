@@ -49,7 +49,7 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
 
   if (transactions.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-grey-500">
         No recent transactions
       </div>
     );
@@ -57,7 +57,7 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
 
   return (
     <div className="space-y-3">
-      <h3 className="text-lg font-semibold mb-4">Recent Transactions</h3>
+      <h3 className="text-lg font-semibold mb-4 text-black">Recent Transactions</h3>
       {transactions.map((transaction) => (
         <div key={transaction._id} className="bg-white p-4 rounded-lg shadow border">
           {editingId === transaction._id ? (
@@ -95,7 +95,7 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
           ) : (
             <div className="flex justify-between items-center">
               <div>
-                <div className="font-medium">{transaction.item}</div>
+                <div className="font-medium text-black">{transaction.item}</div>
                 <div className="text-sm text-gray-500">{formatDate(transaction.date)}</div>
               </div>
               <div className="flex items-center space-x-3">

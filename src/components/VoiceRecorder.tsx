@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 
 interface VoiceRecorderProps {
@@ -10,10 +10,32 @@ interface VoiceRecorderProps {
 export default function VoiceRecorder({ onTranscription }: VoiceRecorderProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
+  // Check online status
+  useEffect(() => {
+    setIsOffline(!navigator.onLine);
+    
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   const startRecording = async () => {
+    if (isOffline) {
+      alert('Voice transcription requires internet connection. Please use text input when offline.');
+      return;
+    }
+    
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       alert('Voice recording is not supported in this browser');
       return;

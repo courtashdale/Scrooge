@@ -103,7 +103,7 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
       .attr('transform', d => `translate(${arc.centroid(d)})`)
       .attr('text-anchor', 'middle')
       .attr('font-size', '12px')
-      .attr('fill', 'white')
+      .attr('fill', 'black')
       .text(d => d.data.category);
 
   }, [transactions]);
@@ -138,14 +138,21 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
       .y(d => yScale(d.total))
       .curve(d3.curveMonotoneX);
 
-    // Add axes
+    // Bottom axis
     svg.append('g')
       .attr('transform', `translate(0, ${height - margin.bottom})`)
-      .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat('%m/%d')));
+      .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat('%m/%d')))
+      .call(g => g.selectAll('text').attr('fill', 'black')) // ← Axis labels
+      .call(g => g.selectAll('line').attr('stroke', 'black')) // ← Tick lines
+      .call(g => g.selectAll('path').attr('stroke', 'black')); // ← Axis line
 
+    // Left axis
     svg.append('g')
       .attr('transform', `translate(${margin.left}, 0)`)
-      .call(d3.axisLeft(yScale).tickFormat(d => `$${d}`));
+      .call(d3.axisLeft(yScale).tickFormat(d => `$${d}`))
+      .call(g => g.selectAll('text').attr('fill', 'black'))
+      .call(g => g.selectAll('line').attr('stroke', 'black'))
+      .call(g => g.selectAll('path').attr('stroke', 'black'));
 
     // Add line
     svg.append('path')
@@ -174,7 +181,7 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
     <div className="space-y-8">
       {/* Category Breakdown */}
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-xl font-semibold mb-4">Expenses by Category</h3>
+        <h3 className="text-xl font-semibold mb-4 text-black">Expenses by Category</h3>
         {categoryData.length > 0 ? (
           <div className="flex flex-col lg:flex-row items-center gap-8">
             <div className="flex-shrink-0">
@@ -182,7 +189,7 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
             </div>
             <div className="space-y-2">
               {categoryData.map((item, index) => (
-                <div key={item.category} className="flex items-center space-x-3">
+                <div key={item.category} className="flex items-center space-x-3 text-black">
                   <div 
                     className="w-4 h-4 rounded"
                     style={{ backgroundColor: d3.schemeCategory10[index % 10] }}
@@ -202,7 +209,7 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
 
       {/* Daily Spending Trend */}
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-xl font-semibold mb-4">Daily Spending Trend</h3>
+        <h3 className="text-xl font-semibold mb-4 text-black">Daily Spending Trend</h3>
         {timeSeriesData.length > 0 ? (
           <div className="overflow-x-auto">
             <svg ref={lineChartRef}></svg>

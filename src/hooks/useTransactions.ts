@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Transaction } from '@/types/transaction';
+import { offlineStorage } from '@/lib/offlineStorage';
+import { categorizeOffline } from '@/lib/offlineParser';
 
 export function useTransactions() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -29,26 +31,59 @@ export function useTransactions() {
   };
 
   // Add new transaction
-  const addTransaction = async (item: string, cost: number, date: Date = new Date()) => {
+  const addTransaction = async (item: string, cost: number, date: Date = new Date(), useOffline: boolean = false) => {
     try {
       setLoading(true);
       
-      // First categorize the item
-      const categoryResponse = await axios.post('/api/categorize', { item });
-      const categories = categoryResponse.data;
+      let categories;
+      let newTransaction: Transaction;
       
-      // Create transaction with categories
-      const transactionData = {
-        item,
-        cost,
-        date,
-        ...categories
-      };
-      
-      const response = await axios.post('/api/transactions', transactionData);
+      if (useOffline || !navigator.onLine) {
+        // Offline mode: use local categorization and storage
+        categories = categorizeOffline(item);
+        
+        const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const pendingTransaction = {
+          tempId,
+          item,
+          cost,
+          date,
+          ...categories
+        };
+        
+        // Save to IndexedDB as pending
+        await offlineStorage.savePendingTransaction(pendingTransaction);
+        
+        // Create a temporary transaction for local state (with fake _id)
+        newTransaction = {
+          _id: tempId,
+          item,
+          cost,
+          date,
+          ...categories
+        };
+        
+        console.log('Transaction saved offline, will sync when online');
+      } else {
+        // Online mode: use API
+        const categoryResponse = await axios.post('/api/categorize', { item });
+        categories = categoryResponse.data;
+        
+        const transactionData = {
+          item,
+          cost,
+          date,
+          ...categories
+        };
+        
+        const response = await axios.post('/api/transactions', transactionData);
+        newTransaction = response.data;
+        
+        // Also save to IndexedDB for offline access
+        await offlineStorage.saveTransaction(newTransaction);
+      }
       
       // Update local state
-      const newTransaction = response.data;
       setTransactions(prev => [newTransaction, ...prev.slice(0, 9)]); // Keep 10 most recent
       
       // Update localStorage

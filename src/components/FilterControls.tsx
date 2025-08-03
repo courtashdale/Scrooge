@@ -18,7 +18,7 @@ export default function FilterControls({ currentFilter, onFilterChange }: Filter
 
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">Filter by Date</h3>
+      <h3 className="text-lg font-semibold mb-4 text-black">Filter by Date</h3>
       <div className="flex flex-wrap gap-2">
         {filters.map(({ value, label }) => (
           <button

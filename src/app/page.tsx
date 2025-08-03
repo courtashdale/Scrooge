@@ -7,12 +7,15 @@ import VoiceRecorder from '@/components/VoiceRecorder';
 import TextInput from '@/components/TextInput';
 import TransactionList from '@/components/TransactionList';
 import { useTransactions } from '@/hooks/useTransactions';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { parseExpenseOffline, categorizeOffline } from '@/lib/offlineParser';
 
 export default function Home() {
   const [todaysTotal, setTodaysTotal] = useState(0);
   const [transcription, setTranscription] = useState('');
   const [showTransactions, setShowTransactions] = useState(false);
   const [inputMode, setInputMode] = useState<'voice' | 'text'>('voice');
+  const isOnline = useNetworkStatus();
   const { transactions, addTransaction, updateTransaction, deleteTransaction, loading } = useTransactions();
 
   // Calculate today's total
@@ -34,13 +37,42 @@ export default function Home() {
       setTranscription(text);
     }
     
+    let amount: number;
+    let item: string;
+    let useOfflineFlow = false;
+    
     try {
-      // Use AI to parse the expense text
-      const parseResponse = await axios.post('/api/parse-expense', { text });
-      const { amount, item } = parseResponse.data;
+      if (isOnline) {
+        // Try AI parsing first when online
+        const parseResponse = await axios.post('/api/parse-expense', { text });
+        ({ amount, item } = parseResponse.data);
+      } else {
+        useOfflineFlow = true;
+        throw new Error('Offline mode');
+      }
+    } catch (error) {
+      // Fallback to offline parsing
+      console.log(isOnline ? 'AI parsing failed, using offline fallback' : 'Offline mode: using local parsing');
       
+      const parsed = parseExpenseOffline(text);
+      if (!parsed) {
+        // Show appropriate error message
+        if (inputMode === 'voice') {
+          alert(`I heard: "${text}"\nCouldn't extract amount and item. Please try again.`);
+          setTranscription('');
+        } else {
+          alert('Please include an amount and item description (e.g., "$12.50 for coffee")');
+        }
+        return;
+      }
+      
+      ({ amount, item } = parsed);
+      useOfflineFlow = true;
+    }
+    
+    try {
       if (amount > 0 && item) {
-        await addTransaction(item, amount);
+        await addTransaction(item, amount, new Date(), useOfflineFlow);
         if (inputMode === 'voice') {
           setTranscription('');
         }
@@ -48,15 +80,8 @@ export default function Home() {
         throw new Error('Invalid amount or item');
       }
     } catch (error) {
-      console.error('Failed to parse or add transaction:', error);
-      
-      // Show appropriate error message
-      if (inputMode === 'voice') {
-        alert(`I heard: "${text}"\nPlease try again with a clearer amount and item description.`);
-        setTranscription('');
-      } else {
-        alert('Please include an amount and item description (e.g., "$12.50 for coffee")');
-      }
+      console.error('Failed to add transaction:', error);
+      alert('Failed to save transaction. Please try again.');
     }
   };
 
@@ -74,6 +99,11 @@ export default function Home() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">🎩 Scrooge</h1>
           <p className="text-gray-600">Voice & Text Expense Tracker</p>
+          {!isOnline && (
+            <div className="mt-2 px-3 py-1 bg-orange-100 text-orange-800 text-sm rounded-full inline-block">
+              🌚 Offline Mode - Data will sync when you're back online
+            </div>
+          )}
         </div>
 
         {/* Today's Total */}
