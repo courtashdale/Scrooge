@@ -5,7 +5,7 @@ import logger from '@/lib/logger';
 
 type RouteContext = { params: { id: string } };
 
-export async function PUT(request: NextRequest, { params }: RouteContext) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params;
   logger.info({ id }, 'Updating transaction');
 
@@ -41,7 +41,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: RouteContext) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params;
   logger.info({ id }, 'Deleting transaction');
 
