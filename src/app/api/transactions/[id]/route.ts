@@ -3,11 +3,28 @@ import { getDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import logger from '@/lib/logger';
 
-export async function PUT(request: NextRequest, context: any) {
-  const { id } = (context.params || {}) as { id: string };
+type Params = { id: string };
+
+function getParams(context: unknown): Params {
+  if (
+    context &&
+    typeof context === 'object' &&
+    'params' in context &&
+    typeof (context as any).params === 'object' &&
+    (context as any).params !== null &&
+    'id' in (context as any).params &&
+    typeof (context as any).params.id === 'string'
+  ) {
+    return (context as { params: Params }).params;
+  }
+  throw new Error('Invalid route context');
+}
+
+export async function PUT(request: NextRequest, context: unknown) {
+  const { id } = getParams(context);
   logger.info({ id }, 'Updating transaction');
 
-  if (!id || !ObjectId.isValid(id)) {
+  if (!ObjectId.isValid(id)) {
     logger.warn({ id }, 'Invalid transaction ID');
     return NextResponse.json({ error: 'Invalid transaction ID' }, { status: 400 });
   }
@@ -40,11 +57,11 @@ export async function PUT(request: NextRequest, context: any) {
   }
 }
 
-export async function DELETE(request: NextRequest, context: any) {
-  const { id } = (context.params || {}) as { id: string };
+export async function DELETE(request: NextRequest, context: unknown) {
+  const { id } = getParams(context);
   logger.info({ id }, 'Deleting transaction');
 
-  if (!id || !ObjectId.isValid(id)) {
+  if (!ObjectId.isValid(id)) {
     logger.warn({ id }, 'Invalid transaction ID');
     return NextResponse.json({ error: 'Invalid transaction ID' }, { status: 400 });
   }
