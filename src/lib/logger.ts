@@ -1,6 +1,6 @@
 import pino from 'pino';
 
-const pinoOptions = {
+const pinoOptions: pino.LoggerOptions = {
   level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
 };
 
