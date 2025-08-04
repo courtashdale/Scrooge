@@ -20,7 +20,9 @@ const config = [
       '**/.next/**',
       '**/dist/**',
       '**/coverage/**',
-      '**/.venv/**'
+      '**/.venv/**',
+      '**.eslintignore**',
+      '**/.claude/**'
     ],
   },
 

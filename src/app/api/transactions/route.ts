@@ -25,13 +25,13 @@ export async function GET(request: NextRequest) {
     if (category && category !== 'all') {
       filter[`is_${category}`] = true;
     }
-    
+
     logger.info({ filter }, 'Fetching transactions');
     const transactions = await collection
       .find(filter)
       .sort({ date: -1 })
       .toArray();
-    
+
     logger.info({ count: transactions.length }, 'Fetched transactions');
     return NextResponse.json(transactions);
   } catch (error) {
@@ -45,18 +45,21 @@ export async function POST(request: NextRequest) {
     const db = await getDatabase();
     const collection = db.collection('expenses');
 
-    const transaction: Omit<Transaction, '_id'> = await request.json();
+    const transaction = await request.json();
     logger.info({ transaction }, 'Creating transaction');
     const result = await collection.insertOne({
       ...transaction,
-      date: new Date(transaction.date)
+      date: new Date(transaction.date),
     });
-    
+
     logger.info({ id: result.insertedId }, 'Created transaction');
-    return NextResponse.json({ 
-      _id: result.insertedId,
-      ...transaction 
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        _id: result.insertedId,
+        ...transaction,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     logger.error(error, 'Database error');
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
