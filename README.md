@@ -4,14 +4,12 @@ An AI-powered mobile web app for tracking expenses through voice commands with r
 
 ## Features
 
-- **Voice Recording**: Real-time audio capture and transcription using OpenAI Whisper
-- **Smart Categorization**: Automatic expense categorization using GPT-3.5-turbo
-- **Live Dashboard**: Interactive charts and analytics with D3.js
-- **Local Caching**: 10 most recent transactions cached for offline viewing
-- **Mobile-Optimized**: Responsive design for mobile web browsers
-- **No Authentication**: Lightweight single-user design
+- **🎙️ Voice Recording**: Real-time audio capture and transcription using OpenAI Whisper
+- **🪣 Smart Categorization**: Automatic expense categorization using GPT-3.5-turbo
+- **📊 ive Dashboard**: Interactive charts and analytics with D3.js
+- **📲 Mobile-First**: Responsive design for mobile web browsers
 
-## Tech Stack
+## 🎛️ Tech Stack
 
 - **Frontend**: Next.js 14, React, TypeScript, Tailwind CSS
 - **Backend**: Next.js API Routes (serverless functions)
@@ -20,12 +18,12 @@ An AI-powered mobile web app for tracking expenses through voice commands with r
 - **Charts**: D3.js
 - **Deployment**: Vercel
 
-## Setup Instructions
+## 🏗️ Setup Instructions
 
 ### 1. Clone and Install Dependencies
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/courtashdale/Scrooge
 cd scrooge_2
 npm install
 ```
@@ -72,7 +70,7 @@ Visit `http://localhost:3000` to see the app.
    - `OPENAI_API_KEY`
 4. Deploy!
 
-## Usage
+## 🧤 Usage
 
 1. **Record Expense**: Click the record button and say something like "I spent $12.50 on coffee"
 2. **View Today's Total**: See your total expenses for today on the main screen
@@ -80,7 +78,7 @@ Visit `http://localhost:3000` to see the app.
 4. **Dashboard**: View interactive charts and filter by date ranges
 5. **Categories**: Expenses are automatically categorized (grocery, entertainment, transportation, etc.)
 
-## API Endpoints
+## 🔌 API Endpoints
 
 - `GET /api/transactions` - Fetch transactions with optional date filtering
 - `POST /api/transactions` - Create new transaction
@@ -89,7 +87,7 @@ Visit `http://localhost:3000` to see the app.
 - `POST /api/transcribe` - Transcribe audio to text
 - `POST /api/categorize` - Categorize expense item
 
-## Database Schema
+## 🛢️ Database Schema
 
 ```javascript
 {
@@ -108,15 +106,3 @@ Visit `http://localhost:3000` to see the app.
   is_other: Boolean      // false
 }
 ```
-
-## Browser Compatibility
-
-Requires browsers with:
-- WebRTC/MediaRecorder API for voice recording
-- Modern JavaScript (ES6+)
-- Local Storage support
-
-Tested on:
-- Chrome (mobile & desktop)
-- Safari (mobile & desktop)
-- Firefox (desktop)
