@@ -16,9 +16,10 @@ export async function GET(request: NextRequest) {
     const filter: { [key: string]: unknown } = {};
     
     if (date_start || date_end) {
-      filter.date = {};
-      if (date_start) filter.date.$gte = new Date(date_start);
-      if (date_end) filter.date.$lte = new Date(date_end);
+      const dateFilter: { $gte?: Date; $lte?: Date } = {};
+      if (date_start) dateFilter.$gte = new Date(date_start);
+      if (date_end) dateFilter.$lte = new Date(date_end);
+      filter.date = dateFilter;
     }
     
     if (category && category !== 'all') {

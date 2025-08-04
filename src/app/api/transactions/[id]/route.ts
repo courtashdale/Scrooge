@@ -5,9 +5,9 @@ import logger from '@/lib/logger';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
   logger.info({ id }, 'Updating transaction');
   
   if (!id || !ObjectId.isValid(id)) {
@@ -44,9 +44,9 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
   logger.info({ id }, 'Deleting transaction');
   
   if (!id || !ObjectId.isValid(id)) {

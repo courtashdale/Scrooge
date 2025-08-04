@@ -107,9 +107,9 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
       .attr('text-anchor', 'middle')
       .attr('font-size', '12px')
       .attr('fill', textColor)
-      .text(d => d.data.category);
+      .text(d => (d.data as { category: string; value: number }).category);
 
-  }, [transactions, getCategoryData]);
+  }, [transactions, getCategoryData, theme]);
 
   // Draw line chart
   useEffect(() => {
@@ -145,7 +145,7 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
     // Bottom axis
     svg.append('g')
       .attr('transform', `translate(0, ${height - margin.bottom})`)
-      .call(d3.axisBottom(xScale).tickFormat(d3.timeFormat('%m/%d')))
+      .call(d3.axisBottom(xScale))
       .call(g => g.selectAll('text').attr('fill', textColor)) // ← Axis labels
       .call(g => g.selectAll('line').attr('stroke', textColor)) // ← Tick lines
       .call(g => g.selectAll('path').attr('stroke', textColor)); // ← Axis line
@@ -176,7 +176,7 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
       .attr('r', 4)
       .attr('fill', '#3b82f6');
 
-  }, [transactions, getTimeSeriesData]);
+  }, [transactions, getTimeSeriesData, theme]);
 
   const categoryData = getCategoryData();
   const timeSeriesData = getTimeSeriesData();
