@@ -79,7 +79,7 @@ export default function Home() {
           alert(`I heard: "${text}"\nCouldn't extract amount and item. Please try again.`);
           setTranscription('');
         } else {
-          alert('Please include an amount and item description (e.g., "$12.50 for coffee")');
+          alert('Please include an amount and item description (e.g., "€12.50 for coffee")');
         }
         return;
       }
@@ -109,7 +109,7 @@ export default function Home() {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'EUR'
     }).format(amount);
   };
 

@@ -200,7 +200,7 @@ export default function ExpenseCharts({ transactions }: ExpenseChartsProps) {
                   ></div>
                   <span className="text-sm font-medium">{item.category}</span>
                   <span className="text-sm text-gray-600">
-                    ${item.value.toFixed(2)}
+                    €{item.value.toFixed(2)}
                   </span>
                 </div>
               ))}
