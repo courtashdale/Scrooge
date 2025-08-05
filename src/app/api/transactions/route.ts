@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/mongodb';
-import { Transaction } from '@/types/transaction';
 import logger from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
