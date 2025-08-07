@@ -42,7 +42,17 @@ export default function VoiceRecorder({ onTranscription }: VoiceRecorderProps) {
     }
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Enhanced constraints for better mobile compatibility
+      const constraints = {
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          sampleRate: 16000
+        }
+      };
+      
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
@@ -63,7 +73,11 @@ export default function VoiceRecorder({ onTranscription }: VoiceRecorderProps) {
       setIsRecording(true);
     } catch (error) {
       console.error('Error starting recording:', error);
-      alert('Could not access microphone');
+      if (error.name === 'NotAllowedError') {
+        alert('Microphone access denied. Please enable microphone permissions in your browser settings.');
+      } else {
+        alert('Could not access microphone. Please ensure you have granted microphone permissions.');
+      }
     }
   };
 
@@ -98,25 +112,31 @@ export default function VoiceRecorder({ onTranscription }: VoiceRecorderProps) {
   return (
     <div className="flex flex-col items-center space-y-4">
       <button
-        onClick={isRecording ? stopRecording : startRecording}
+        onMouseDown={!isRecording && !isProcessing ? startRecording : undefined}
+        onMouseUp={isRecording ? stopRecording : undefined}
+        onMouseLeave={isRecording ? stopRecording : undefined}
+        onTouchStart={!isRecording && !isProcessing ? startRecording : undefined}
+        onTouchEnd={isRecording ? stopRecording : undefined}
+        onTouchCancel={isRecording ? stopRecording : undefined}
         disabled={isProcessing}
-        className={`w-24 h-24 rounded-full flex items-center justify-center text-white font-bold text-lg transition-all ${
+        className={`w-24 h-24 rounded-full flex items-center justify-center text-white font-bold text-lg transition-all select-none ${
           isRecording
             ? 'bg-red-500 hover:bg-red-600 animate-pulse'
             : isProcessing
             ? 'bg-gray-400 cursor-not-allowed'
-            : 'bg-blue-500 hover:bg-blue-600'
+            : 'bg-blue-500 hover:bg-blue-600 active:bg-blue-700'
         }`}
+        style={{ touchAction: 'manipulation', WebkitTouchCallout: 'none' }}
       >
-        {isProcessing ? '...' : isRecording ? 'Stop' : 'Record'}
+        {isProcessing ? '...' : isRecording ? '🎤' : '🎤'}
       </button>
       
       <p className="text-sm text-gray-600 text-center">
         {isProcessing
           ? 'Processing...'
           : isRecording
-          ? 'Recording... Click to stop'
-          : 'Click to record your expense'
+          ? 'Recording... Release to stop'
+          : 'Press and hold to record'
         }
       </p>
     </div>
